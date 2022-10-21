@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="js/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="content"></div>
+    <script>
+        let url = "https://api.btstu.cn/yan/api.php?charset=utf-8&encode=json";
+     
+        let requests = [];
+        for (let i = 0; i < 10; i++) {
+            requests.push(axios.get(url));
+        }
+        let start = new Date();
+        axios.all(requests).then(
+            axios.spread(function (...res) {
+                for(let i of res){
+                    if(i.status==200){
+                        document.getElementById("content").innerHTML += i.data.text+"<br/>"
+                    }
+                }
+                let end = new Date();
+                document.getElementById("content").innerHTML += (end-start) + "ms escaped <br/>";
+
+            })
+        );
+
+
+    </script>
+</body>
+
+</html>

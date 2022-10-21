@@ -1,0 +1,56 @@
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="content"></div>
+    <script>
+        let start = new Date();
+        ajaxTest();
+        let end;
+        function ajaxTest() {
+            let cnt = 0;
+            let result = [];
+            let url = "http://api.btstu.cn/yan/api.php?charset=utf-8&encode=json";
+
+            $(document).ajaxSuccess(function (event, request, settings) {
+                if (settings.lastFlag) {
+                    console.log("All Done");
+                    
+                    for (i of result) {
+                        document.getElementById("content").innerHTML += i + "<br/>";
+                    }
+                    end = new Date();
+                    document.getElementById("content").innerHTML += (end-start) + "ms escaped <br/>";
+                }
+            });
+
+            $.ajax({
+                url: url,
+                type: "get",
+                dataType: "json",
+                success: function (data) {
+                    cnt = 10;//Math.ceil(data.text.length / 4);
+                    console.log("inside count: " + cnt);
+                    for (let i = 0; i < cnt; i++) {
+                        let flag = (i == cnt - 1) ? true : false;
+                        $.ajax({
+                            url: url,
+                            type: "get",
+                            dataType: "json",
+                            lastFlag: flag,
+                            success: function (data2) {
+                                console.log("Progress " + cnt);
+                                result.push(data2.text);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
