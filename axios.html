@@ -9,25 +9,45 @@
     <div id="content"></div>
     <script>
         let url = "https://api.btstu.cn/yan/api.php?charset=utf-8&encode=json";
-     
-        let requests = [];
-        for (let i = 0; i < 10; i++) {
-            requests.push(axios.get(url));
-        }
-        let start = new Date();
-        axios.all(requests).then(
-            axios.spread(function (...res) {
-                for(let i of res){
-                    if(i.status==200){
-                        document.getElementById("content").innerHTML += i.data.text+"<br/>"
+        syncAjax(url);
+        //asyncAjax(url);
+        function asyncAjax(url) {
+            let requests = [];
+            for (let i = 0; i < 10; i++) {
+                requests.push(axios.get(url));
+            }
+            let start = new Date();
+            axios.all(requests).then(
+                axios.spread(function (...res) {
+                    for (let i of res) {
+                        if (i.status == 200) {
+                            document.getElementById("content").innerHTML += i.data.text + "<br/>"
+                        }
                     }
+                    let end = new Date();
+                    document.getElementById("content").innerHTML += (end - start) + "ms escaped <br/>";
+
+                })
+            );
+        }
+
+        async function syncAjax(url){
+            let result = [];
+            let start = new Date();
+            for (let i = 0; i < 10; i++) {
+                let res = await axios.get(url);
+                if(res.status == 200){
+                    result.push(res.data.text);
+                    document.getElementById("content").innerHTML += res.data.text + "<br/>"
                 }
-                let end = new Date();
-                document.getElementById("content").innerHTML += (end-start) + "ms escaped <br/>";
+            }
+            console.log(result);
 
-            })
-        );
-
+            let end = new Date();
+            let timespan = end-start;
+            console.log(timespan + " ms escaped.");
+            return result;
+        }
 
     </script>
 </body>
